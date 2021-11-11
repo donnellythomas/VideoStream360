@@ -6,7 +6,7 @@
 
 #IncludeRegexTransform: 
 
-/home/thomasdonnelly/School/Thesis/project/project.cpp
+/home/thomasdonnelly/School/Thesis/project/video.cpp
 stdio.h
 -
 opencv2/opencv.hpp

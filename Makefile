@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /mnt/c/Users/donne/School/Thesis/project
+CMAKE_SOURCE_DIR = /home/thomasdonnelly/School/Thesis/project
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /mnt/c/Users/donne/School/Thesis/project
+CMAKE_BINARY_DIR = /home/thomasdonnelly/School/Thesis/project
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/donne/School/Thesis/project/CMakeFiles /mnt/c/Users/donne/School/Thesis/project/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/thomasdonnelly/School/Thesis/project/CMakeFiles /home/thomasdonnelly/School/Thesis/project/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /mnt/c/Users/donne/School/Thesis/project/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/thomasdonnelly/School/Thesis/project/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -111,6 +111,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named video
+
+# Build rule for target.
+video: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 video
+.PHONY : video
+
+# fast build rule for target.
+video/fast:
+	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/build
+.PHONY : video/fast
+
+#=============================================================================
+# Target rules for targets named downsize
+
+# Build rule for target.
+downsize: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 downsize
+.PHONY : downsize
+
+# fast build rule for target.
+downsize/fast:
+	$(MAKE) -f CMakeFiles/downsize.dir/build.make CMakeFiles/downsize.dir/build
+.PHONY : downsize/fast
+
+#=============================================================================
 # Target rules for targets named project
 
 # Build rule for target.
@@ -122,6 +148,33 @@ project: cmake_check_build_system
 project/fast:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/build
 .PHONY : project/fast
+
+downsize.o: downsize.cpp.o
+
+.PHONY : downsize.o
+
+# target to build an object file
+downsize.cpp.o:
+	$(MAKE) -f CMakeFiles/downsize.dir/build.make CMakeFiles/downsize.dir/downsize.cpp.o
+.PHONY : downsize.cpp.o
+
+downsize.i: downsize.cpp.i
+
+.PHONY : downsize.i
+
+# target to preprocess a source file
+downsize.cpp.i:
+	$(MAKE) -f CMakeFiles/downsize.dir/build.make CMakeFiles/downsize.dir/downsize.cpp.i
+.PHONY : downsize.cpp.i
+
+downsize.s: downsize.cpp.s
+
+.PHONY : downsize.s
+
+# target to generate assembly for a file
+downsize.cpp.s:
+	$(MAKE) -f CMakeFiles/downsize.dir/build.make CMakeFiles/downsize.dir/downsize.cpp.s
+.PHONY : downsize.cpp.s
 
 project.o: project.cpp.o
 
@@ -150,6 +203,33 @@ project.cpp.s:
 	$(MAKE) -f CMakeFiles/project.dir/build.make CMakeFiles/project.dir/project.cpp.s
 .PHONY : project.cpp.s
 
+video.o: video.cpp.o
+
+.PHONY : video.o
+
+# target to build an object file
+video.cpp.o:
+	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.o
+.PHONY : video.cpp.o
+
+video.i: video.cpp.i
+
+.PHONY : video.i
+
+# target to preprocess a source file
+video.cpp.i:
+	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.i
+.PHONY : video.cpp.i
+
+video.s: video.cpp.s
+
+.PHONY : video.s
+
+# target to generate assembly for a file
+video.cpp.s:
+	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/video.cpp.s
+.PHONY : video.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -158,10 +238,18 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... video"
+	@echo "... downsize"
 	@echo "... project"
+	@echo "... downsize.o"
+	@echo "... downsize.i"
+	@echo "... downsize.s"
 	@echo "... project.o"
 	@echo "... project.i"
 	@echo "... project.s"
+	@echo "... video.o"
+	@echo "... video.i"
+	@echo "... video.s"
 .PHONY : help
 
 
