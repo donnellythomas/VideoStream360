@@ -234,6 +234,7 @@ void runVideo(char* path){
     int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
     Mat ** mxy = computeFaceMaps(width,height);
+    int i = 0;
     while(1){
         Mat in;
         cap >> in;
@@ -242,6 +243,11 @@ void runVideo(char* path){
         Mat unpacked = unpack(packed);
 
         imshow("unpacked", packed);
+        string index = to_string(i);
+        while(i < 5) {
+            imwrite(index + ".png", packed);
+            i++;
+        }
         // while(1);
         char c=(char)waitKey(25);
         if(c==27) break;
