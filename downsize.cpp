@@ -5,6 +5,8 @@
 using namespace std::chrono;
 using namespace std;
 using namespace cv;
+
+const float CUBESIZE = 16 * 40;
 Mat importImage(String path) {
     Mat image = imread(path, CV_32F);
     if (!image.data) {
@@ -12,11 +14,41 @@ Mat importImage(String path) {
     }
     return image;
 }
-float faceTransform[6][2] = {{0, 0},         {M_PI / 2, 0},  {M_PI, 0},
-                             {-M_PI / 2, 0}, {0, -M_PI / 2}, {0, M_PI / 2}}; // front right back left top bottom
-void computeFaceMap(float inWidth, float inHeight, Mat &mx, Mat &my, int cubeSize, int faceID){
-    int height = cubeSize;
-    int width = cubeSize;
+// float faceTransform[6][2] = {{0, 0},         {M_PI / 2, 0},  {M_PI, 0},
+//                              {-M_PI / 2, 0}, {0, -M_PI / 2}, {0, M_PI / 2}}; // front right back left top bottom
+float faceTransform[6][2] = {{-M_PI / 2, 0},{0, 0},{M_PI / 2, 0},{M_PI, 0}, {0, -M_PI / 2}, {0, M_PI / 2}}; // left front right back top bottom
+float packedCoords[14][2] = {
+        {0,0},                          
+        {CUBESIZE,0},                   
+        {CUBESIZE*2,0},
+        {CUBESIZE*3,0},
+        {CUBESIZE*4,0}, 
+        {CUBESIZE*4,CUBESIZE/16},
+        {CUBESIZE*4,CUBESIZE/16*2},
+        {CUBESIZE*4,CUBESIZE/16*3},
+        {CUBESIZE*4,CUBESIZE/16*4},
+        {CUBESIZE*4,CUBESIZE/16*5},
+        {CUBESIZE*4,CUBESIZE/16*6},
+        {CUBESIZE*4,CUBESIZE/16*7},
+        {CUBESIZE*4+CUBESIZE/4,0},
+        {CUBESIZE*4+CUBESIZE/4,CUBESIZE/4}};
+    float cubeCoords[14][2] = {
+        {0,CUBESIZE*1.25f},             //front
+        {CUBESIZE, CUBESIZE*1.25f},     //right
+        {CUBESIZE*2, CUBESIZE*1.25f},   //back
+        {CUBESIZE*3, CUBESIZE*1.25f},   //left
+        {0,CUBESIZE},                   //frontTop
+        {0,CUBESIZE*1.75f},             //frontBottom
+        {CUBESIZE,CUBESIZE},            //rightTop
+        {CUBESIZE,CUBESIZE*1.75f},      //rightBottom
+        {CUBESIZE*2,CUBESIZE},          //backTop
+        {CUBESIZE*2,CUBESIZE*1.75f},    //backBottom
+        {CUBESIZE*3,CUBESIZE},          //leftTop
+        {CUBESIZE*3,CUBESIZE*1.75f},    //leftBottom
+        {CUBESIZE,0},                   //top
+        {CUBESIZE,CUBESIZE*2} };        //bottom
+void computeFaceMap(float inWidth, float inHeight, Mat &mx, Mat &my, int faceID){
+    
     
     // Calculate adjacent (ak) and opposite (an) of the
     // triangle that is spanned from the sphere center
@@ -29,11 +61,11 @@ void computeFaceMap(float inWidth, float inHeight, Mat &mx, Mat &my, int cubeSiz
 
     // For each point in the target image,
     // calculate the corresponding source coordinates.
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
+    for (int y = 0; y < CUBESIZE; y++) {
+        for (int x = 0; x < CUBESIZE; x++) {
             // Map face pixel coordinates to [-1, 1] on plane
-            float nx = ((float)(y) / (float)height - 0.5f);
-            float ny = ((float)(x) / (float)width - 0.5f);
+            float nx = ((float)(y) / CUBESIZE - 0.5f);
+            float ny = ((float)(x) / CUBESIZE - 0.5f);
 
             // printf("test");
             nx *= 2;
@@ -95,16 +127,15 @@ void mapFace(Mat &in, Mat &out, Mat &mx, Mat &my){
       remap(in, out, mx, my, INTER_LINEAR, BORDER_CONSTANT,
           Scalar(0, 0, 0));
 }
-Mat** computeFaceMaps(float inWidth, float inHeight, int cubeSize){
+Mat** computeFaceMaps(float inWidth, float inHeight){
      Mat ** mxy = new Mat*[6];
     for (int i = 0; i < 6; i++)
     {   
         mxy[i] =new Mat[2];
-        cubeSize = cubeSize;
-        mxy[i][0] =  Mat(cubeSize, cubeSize, CV_32F);
-        mxy[i][1] =  Mat(cubeSize, cubeSize, CV_32F); 
+        mxy[i][0] =  Mat(CUBESIZE, CUBESIZE, CV_32F);
+        mxy[i][1] =  Mat(CUBESIZE, CUBESIZE, CV_32F); 
        
-        computeFaceMap(inWidth, inHeight , mxy[i][0], mxy[i][1],cubeSize,i);
+        computeFaceMap(inWidth, inHeight , mxy[i][0], mxy[i][1],i);
     }
 
     
@@ -117,7 +148,7 @@ void splitFace(const Mat &full, Mat &top, Mat &mid, Mat &bott){
     resize(top, top, Size(), .25, .25, INTER_AREA); // downscale 4x
     resize(bott, bott, Size(), .25, .25, INTER_AREA); //  downscale 4x
 }
-void assemblePacked(Mat &packed, Mat *faces, float cubeSize, float packedCoords[][2]){
+void assemblePacked(Mat &packed, Mat *faces){
     Mat packedFaces[14];
     int j = 3;
     for(int i = 0; i < 4; i++){
@@ -136,123 +167,101 @@ void assemblePacked(Mat &packed, Mat *faces, float cubeSize, float packedCoords[
     // imwrite("packed.png", packed);
 
 }
-void unpackAssembleCubemap(Mat &unpacked, Mat &packed , float cubeSize, float packedCoords[][2], float cubeCoords[][2]){
+void unpackAssembleCubemap(Mat &unpacked, Mat &packed){
     Mat face;
     
     for(int i = 0; i <4; i++){
-        face = packed(Range(packedCoords[i][1],packedCoords[i][1]+cubeSize/2),Range(packedCoords[i][0],packedCoords[i][0]+cubeSize));
+        face = packed(Range(packedCoords[i][1],packedCoords[i][1]+CUBESIZE/2),Range(packedCoords[i][0],packedCoords[i][0]+CUBESIZE));
         face.copyTo(unpacked(Rect(cubeCoords[i][0],  cubeCoords[i][1],face.cols, face.rows)));
         
     }
     for(int i = 4; i <12; i++){
-        face = packed(Range(packedCoords[i][1],packedCoords[i][1]+cubeSize/16),Range(packedCoords[i][0],packedCoords[i][0]+cubeSize/4));
+        face = packed(Range(packedCoords[i][1],packedCoords[i][1]+CUBESIZE/16),Range(packedCoords[i][0],packedCoords[i][0]+CUBESIZE/4));
         resize(face, face, Size(),4, 4, INTER_CUBIC); //upscale 4
         face.copyTo(unpacked(Rect(cubeCoords[i][0],  cubeCoords[i][1],face.cols, face.rows)));
     }
     int i = 12;
-    Mat top = packed(Range(packedCoords[i][1],packedCoords[i][1]+cubeSize/4),Range(packedCoords[i][0],packedCoords[i][0]+cubeSize/4));
+    Mat top = packed(Range(packedCoords[i][1],packedCoords[i][1]+CUBESIZE/4),Range(packedCoords[i][0],packedCoords[i][0]+CUBESIZE/4));
     resize(top, top, Size(),4, 4, INTER_CUBIC); //upscale 4
-    rotate(top, top, ROTATE_180);
+    rotate(top, top, ROTATE_90_CLOCKWISE);
     top.copyTo(unpacked(Rect(cubeCoords[i][0],  cubeCoords[i][1],top.cols, top.rows)));
     
     i = 13;
-    Mat bottom = packed(Range(packedCoords[i][1],packedCoords[i][1]+cubeSize/4),Range(packedCoords[i][0],packedCoords[i][0]+cubeSize/4));
+    Mat bottom = packed(Range(packedCoords[i][1],packedCoords[i][1]+CUBESIZE/4),Range(packedCoords[i][0],packedCoords[i][0]+CUBESIZE/4));
     resize(bottom, bottom, Size(),4, 4, INTER_CUBIC); //upscale 4
-    rotate(bottom, bottom, ROTATE_90_CLOCKWISE);
+    rotate(bottom, bottom, ROTATE_90_COUNTERCLOCKWISE);
     bottom.copyTo(unpacked(Rect(cubeCoords[i][0],  cubeCoords[i][1],bottom.cols, bottom.rows)));
 }
-int main(int argc, char **argv) {
-    if (argc != 2) {
-        printf("usage: ./project <Input_Path>\n");
-        return -1;
+Mat pack(Mat &in, Mat ** mxy){
+    Mat faces[6];
+    for (int i = 0; i < 6; i++)
+    {
+        Mat face(CUBESIZE, CUBESIZE, in.type());
+        mapFace(in, face, mxy[i][0], mxy[i][1]);
+        faces[i] = face;
     }
-    // Mat in = importImage(argv[1]);
-    // Mat ref = importImage(argv[2]);
-    
-    VideoCapture cap(argv[1]);
+    Mat packed(CUBESIZE/2, CUBESIZE*4.5, faces[0].type());
+    assemblePacked(packed, faces);
+    return packed;
+}
+Mat unpack(Mat packed){
+    Mat unpacked(CUBESIZE * 3, CUBESIZE * 4, 16);
+    unpackAssembleCubemap(unpacked,packed);
+    return unpacked;
+}
+
+void runImage(char*path){
+    Mat in = importImage(path);
+    int height = in.rows;
+    int width = in.cols;
+
+    Mat ** mxy = computeFaceMaps(width,height);
+    Mat packed = pack(in,mxy);
+    Mat unpacked = unpack(packed);
+    imshow("packed", packed);
+    imwrite("packed.png", packed);
+    imshow("unpacked", unpacked);
+    imwrite("unpacked.png", unpacked);
+    waitKey(0);
+}
+void runVideo(char* path){
+    VideoCapture cap(path);
     if(!cap.isOpened()){
         printf("Error opening video\n");
     }
+    // cap >> in;
+    int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);;
+    int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
 
-    float cubeSize = 16 * 20;
-    
-    float packedCoords[14][2] = {
-        {0,0},                          
-        {cubeSize,0},                   
-        {cubeSize*2,0},
-        {cubeSize*3,0},
-        {cubeSize*4,0}, 
-        {cubeSize*4,cubeSize/16},
-        {cubeSize*4,cubeSize/16*2},
-        {cubeSize*4,cubeSize/16*3},
-        {cubeSize*4,cubeSize/16*4},
-        {cubeSize*4,cubeSize/16*5},
-        {cubeSize*4,cubeSize/16*6},
-        {cubeSize*4,cubeSize/16*7},
-        {cubeSize*4+cubeSize/4,0},
-        {cubeSize*4+cubeSize/4,cubeSize/4}};
-    float cubeCoords[14][2] = {
-        {0,cubeSize*1.25f},             //front
-        {cubeSize, cubeSize*1.25f},     //right
-        {cubeSize*2, cubeSize*1.25f},   //back
-        {cubeSize*3, cubeSize*1.25f},   //left
-        {0,cubeSize},                   //frontTop
-        {0,cubeSize*1.75f},             //frontBottom
-        {cubeSize,cubeSize},            //rightTop
-        {cubeSize,cubeSize*1.75f},      //rightBottom
-        {cubeSize*2,cubeSize},          //backTop
-        {cubeSize*2,cubeSize*1.75f},    //backBottom
-        {cubeSize*3,cubeSize},          //leftTop
-        {cubeSize*3,cubeSize*1.75f},    //leftBottom
-        {cubeSize,0},                   //top
-        {cubeSize,cubeSize*2} };        //bottom
-    Mat frame;
-    cap >> frame;
-    auto start = high_resolution_clock::now();
-    Mat ** mxy = computeFaceMaps(frame.cols, frame.rows, cubeSize);
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop-start);
-    printf("creating mappings: %ld\n", duration.count());
-
-
-
+    Mat ** mxy = computeFaceMaps(width,height);
     while(1){
         Mat in;
         cap >> in;
         if(in.empty()) break;
-       
-    
-    start = high_resolution_clock::now();
-    
-    Mat faces[6];
-    for (int i = 0; i < 6; i++)
-    {
-        Mat face(cubeSize, cubeSize, frame.type());
-        mapFace(in, face, mxy[i][0], mxy[i][1]);
-        faces[i] = face;
-    }
-    stop = high_resolution_clock::now();
-    duration = duration_cast<microseconds>(stop-start);
-    printf("Remapping: %ld\n", duration.count());
-     start = high_resolution_clock::now();
-        
-        Mat packed(cubeSize/2, cubeSize*4.5, faces[0].type());
-        assemblePacked(packed, faces, cubeSize, packedCoords);
-        Mat unpacked(cubeSize * 3, cubeSize * 4, packed.type());
-        unpackAssembleCubemap(unpacked,packed,cubeSize,packedCoords,cubeCoords);
-        stop = high_resolution_clock::now();
-        duration = duration_cast<microseconds>(stop-start);
-        // printf("pack and unpack: %ld\n", duration.count());
-        // imshow("packed", packed);
-        // imwrite("packed.png", packed);
-        imshow("unpacked", unpacked);
+        Mat packed = pack(in,mxy);
+        Mat unpacked = unpack(packed);
+
+        imshow("unpacked", packed);
+        // while(1);
         char c=(char)waitKey(25);
         if(c==27) break;
     }
     cap.release();
-        destroyAllWindows();
-    // imshow("unpacked", unpacked);
-    // imwrite("unpacked.png", unpacked);
-    // waitKey(0);
+
+    destroyAllWindows();
+}
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        printf("usage: ./project <type> <Input_Path> \n");
+        return -1;
+    }
+    string image = "image";
+    if((!image.compare(argv[1]))){
+        runImage(argv[2]);
+    }
+    else{
+        runVideo(argv[2]);
+    }
+   
     return 0;
 }
