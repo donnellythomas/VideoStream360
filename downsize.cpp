@@ -6,7 +6,7 @@ using namespace std::chrono;
 using namespace std;
 using namespace cv;
 
-const float CUBESIZE = 16 * 40;
+const float CUBESIZE = 16*20;
 Mat importImage(String path) {
     Mat image = imread(path, CV_32F);
     if (!image.data) {
@@ -128,7 +128,7 @@ void mapFace(Mat &in, Mat &out, Mat &mx, Mat &my){
           Scalar(0, 0, 0));
 }
 Mat** computeFaceMaps(float inWidth, float inHeight){
-     Mat ** mxy = new Mat*[6];
+    Mat ** mxy = new Mat*[6];
     for (int i = 0; i < 6; i++)
     {   
         mxy[i] =new Mat[2];
@@ -219,9 +219,11 @@ void runImage(char*path){
     Mat packed = pack(in,mxy);
     Mat unpacked = unpack(packed);
     imshow("packed", packed);
-    imwrite("packed.png", packed);
+    // imwrite("packed.png", packed);
     imshow("unpacked", unpacked);
-    imwrite("unpacked.png", unpacked);
+    // imwrite("unpacked.png", unpacked);
+        
+    
     waitKey(0);
 }
 void runVideo(char* path){
@@ -232,28 +234,31 @@ void runVideo(char* path){
     // cap >> in;
     int width = cap.get(cv::CAP_PROP_FRAME_WIDTH);;
     int height = cap.get(cv::CAP_PROP_FRAME_HEIGHT);
-
+    // printf("height: %d, width: %d \n", height, width);
     Mat ** mxy = computeFaceMaps(width,height);
     int i = 0;
+    
+
     while(1){
         Mat in;
         cap >> in;
-        if(in.empty()) break;
-        Mat packed = pack(in,mxy);
-        Mat unpacked = unpack(packed);
-
-        imshow("unpacked", packed);
-        string index = to_string(i);
-        while(i < 5) {
-            imwrite(index + ".png", packed);
-            i++;
+        if(i%2==0){
+            // printf("height: %d, width: %d \n", in.rows, in.cols);
+            if(in.empty()) break;
+            Mat packed = pack(in,mxy);
+            video.write(packed);
+            imshow("packed", packed);
         }
+        
+
+        
         // while(1);
         char c=(char)waitKey(25);
         if(c==27) break;
+        i++;
     }
     cap.release();
-
+    video.release();
     destroyAllWindows();
 }
 int main(int argc, char **argv) {
