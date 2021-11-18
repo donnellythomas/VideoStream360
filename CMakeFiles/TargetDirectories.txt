@@ -1,5 +1,6 @@
 /home/thomasdonnelly/School/Thesis/project/CMakeFiles/rebuild_cache.dir
 /home/thomasdonnelly/School/Thesis/project/CMakeFiles/edit_cache.dir
+/home/thomasdonnelly/School/Thesis/project/CMakeFiles/rotation.dir
 /home/thomasdonnelly/School/Thesis/project/CMakeFiles/video.dir
 /home/thomasdonnelly/School/Thesis/project/CMakeFiles/downsize.dir
 /home/thomasdonnelly/School/Thesis/project/CMakeFiles/project.dir

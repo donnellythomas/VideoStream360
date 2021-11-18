@@ -53,6 +53,7 @@ CMAKE_BINARY_DIR = /home/thomasdonnelly/School/Thesis/project
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/rotation.dir/all
 all: CMakeFiles/video.dir/all
 all: CMakeFiles/downsize.dir/all
 all: CMakeFiles/project.dir/all
@@ -65,11 +66,39 @@ preinstall:
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/rotation.dir/clean
 clean: CMakeFiles/video.dir/clean
 clean: CMakeFiles/downsize.dir/clean
 clean: CMakeFiles/project.dir/clean
 
 .PHONY : clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/rotation.dir
+
+# All Build rule for target.
+CMakeFiles/rotation.dir/all:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/depend
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/thomasdonnelly/School/Thesis/project/CMakeFiles --progress-num=5,6 "Built target rotation"
+.PHONY : CMakeFiles/rotation.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/rotation.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/thomasdonnelly/School/Thesis/project/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/rotation.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/thomasdonnelly/School/Thesis/project/CMakeFiles 0
+.PHONY : CMakeFiles/rotation.dir/rule
+
+# Convenience name for target.
+rotation: CMakeFiles/rotation.dir/rule
+
+.PHONY : rotation
+
+# clean rule for target.
+CMakeFiles/rotation.dir/clean:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/clean
+.PHONY : CMakeFiles/rotation.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/video.dir
@@ -78,7 +107,7 @@ clean: CMakeFiles/project.dir/clean
 CMakeFiles/video.dir/all:
 	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/depend
 	$(MAKE) -f CMakeFiles/video.dir/build.make CMakeFiles/video.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/thomasdonnelly/School/Thesis/project/CMakeFiles --progress-num=5,6 "Built target video"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/thomasdonnelly/School/Thesis/project/CMakeFiles --progress-num=7,8 "Built target video"
 .PHONY : CMakeFiles/video.dir/all
 
 # Build rule for subdir invocation for target.

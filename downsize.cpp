@@ -126,6 +126,7 @@ void computeFaceMap(float inWidth, float inHeight, Mat &mx, Mat &my, int faceID)
 void mapFace(Mat &in, Mat &out, Mat &mx, Mat &my){
       remap(in, out, mx, my, INTER_LINEAR, BORDER_CONSTANT,
           Scalar(0, 0, 0));
+    
 }
 Mat** computeFaceMaps(float inWidth, float inHeight){
     Mat ** mxy = new Mat*[6];
@@ -237,7 +238,13 @@ void runVideo(char* path){
     // printf("height: %d, width: %d \n", height, width);
     Mat ** mxy = computeFaceMaps(width,height);
     int i = 0;
-    
+    VideoWriter video("hvc1.avi",VideoWriter::fourcc('H','V','C','1'),30, Size(1440,160));
+    // string config = "appsrc ! videoconvert ! x264enc noise-reduction=10000 speed-preset=ultrafast tune=zerolatency ! rtph264pay config-interval=1 pt=96 ! tcpserversink host=127.0.0.1 port=5000 sync=false";
+    // VideoWriter video = VideoWriter(
+    // config,
+    // 0,
+    // 30,
+    // Size(1440, 160));
 
     while(1){
         Mat in;
@@ -246,7 +253,14 @@ void runVideo(char* path){
             // printf("height: %d, width: %d \n", in.rows, in.cols);
             if(in.empty()) break;
             Mat packed = pack(in,mxy);
+            // for (size_t i = 0; i < packed.dataend - packed.datastart; i++) 
+            //     cout << packed.data[i]; 
+            // printf("height: %d, width: %d \n", packed.rows, packed.cols);
+            // cout<<packed.type()<<endl;
+            // exit(0);
             video.write(packed);
+
+            // Mat unpacked = unpack(packed);
             imshow("packed", packed);
         }
         

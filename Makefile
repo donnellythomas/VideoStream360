@@ -111,6 +111,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named rotation
+
+# Build rule for target.
+rotation: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 rotation
+.PHONY : rotation
+
+# fast build rule for target.
+rotation/fast:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/build
+.PHONY : rotation/fast
+
+#=============================================================================
 # Target rules for targets named video
 
 # Build rule for target.
@@ -176,6 +189,33 @@ downsize.cpp.s:
 	$(MAKE) -f CMakeFiles/downsize.dir/build.make CMakeFiles/downsize.dir/downsize.cpp.s
 .PHONY : downsize.cpp.s
 
+packWithRotation.o: packWithRotation.cpp.o
+
+.PHONY : packWithRotation.o
+
+# target to build an object file
+packWithRotation.cpp.o:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/packWithRotation.cpp.o
+.PHONY : packWithRotation.cpp.o
+
+packWithRotation.i: packWithRotation.cpp.i
+
+.PHONY : packWithRotation.i
+
+# target to preprocess a source file
+packWithRotation.cpp.i:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/packWithRotation.cpp.i
+.PHONY : packWithRotation.cpp.i
+
+packWithRotation.s: packWithRotation.cpp.s
+
+.PHONY : packWithRotation.s
+
+# target to generate assembly for a file
+packWithRotation.cpp.s:
+	$(MAKE) -f CMakeFiles/rotation.dir/build.make CMakeFiles/rotation.dir/packWithRotation.cpp.s
+.PHONY : packWithRotation.cpp.s
+
 project.o: project.cpp.o
 
 .PHONY : project.o
@@ -238,12 +278,16 @@ help:
 	@echo "... depend"
 	@echo "... rebuild_cache"
 	@echo "... edit_cache"
+	@echo "... rotation"
 	@echo "... video"
 	@echo "... downsize"
 	@echo "... project"
 	@echo "... downsize.o"
 	@echo "... downsize.i"
 	@echo "... downsize.s"
+	@echo "... packWithRotation.o"
+	@echo "... packWithRotation.i"
+	@echo "... packWithRotation.s"
 	@echo "... project.o"
 	@echo "... project.i"
 	@echo "... project.s"
